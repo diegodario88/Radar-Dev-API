@@ -86,7 +86,6 @@ module.exports = {
         }
         dev = await devRepository.update({ _id: dev._id }, {
             name,
-            github_username,
             avatar_url,
             techs: parseStringAsArray(techs),
             bio,
