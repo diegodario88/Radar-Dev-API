@@ -1,7 +1,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
-  <a href="https://residencialfloren.firebaseapp.com/">
+  <a href="https://google.com/">
     <img src="./api.png" alt="Logo" width="600" height="300">
   </a>
 
@@ -36,7 +36,7 @@ Each version of the API functions as a self-contained module, and therefore has 
 ````
 git clone https://github.com/diegodario88/Radar-Dev-API.git
 
-cd ResidencialFlorenApi
+cd Radar-Dev-API
 
 npm install
 
