@@ -34,14 +34,21 @@ module.exports = {
 
     async store(req, res) {
 
-        const { github_username, techs, adress } = req.body
+        const { github_username, techs, adress, loc } = req.body
 
         let dev = await devRepository.findByName(github_username)
 
         if (!dev) {
 
             const { name = login, avatar_url, bio, } = await githubService(github_username)
-            const geoLoc = await geoService(adress)
+            let latitude, longitude
+
+            if (adress) {
+                const geoLoc = await geoService(adress)
+                latitude = geoLoc.lat; longitude = geoLoc.lng
+            } else {
+                latitude = loc.latitude; longitude = loc.longitude
+            }
 
             dev = await devRepository.save({
                 name,
@@ -51,12 +58,11 @@ module.exports = {
                 bio,
                 location: {
                     type: 'Point',
-                    coordinates: [geoLoc.lat, geoLoc.lng]
+                    coordinates: [latitude, longitude]
                 }
             })
 
-            return res.status(200)
-                .json({ message: `Dev ${name} stored successfully` });
+            return res.status(200).json(dev);
         }
 
         return res.status(409)
