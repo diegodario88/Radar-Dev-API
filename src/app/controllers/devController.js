@@ -2,6 +2,7 @@ const githubService = require('../services/githubService')
 const devRepository = require('../repositories/devRepository')
 const geoService = require('../services/geoService')
 const parseStringAsArray = require('../../utils/parseStringAsArray')
+const { findConnections, sendMessage } = require('../../wesocket')
 
 module.exports = {
 
@@ -46,15 +47,19 @@ module.exports = {
             if (adress) {
                 const geoLoc = await geoService(adress)
                 latitude = geoLoc.lat; longitude = geoLoc.lng
+                console.log(geoLoc);
+
             } else {
                 latitude = loc.latitude; longitude = loc.longitude
             }
+
+            const techsArray = parseStringAsArray(techs)
 
             dev = await devRepository.save({
                 name,
                 github_username,
                 avatar_url,
-                techs: parseStringAsArray(techs),
+                techs: techsArray,
                 bio,
                 location: {
                     type: 'Point',
@@ -62,7 +67,12 @@ module.exports = {
                 }
             })
 
-            return res.status(200).json(dev);
+            const sendSocketMessageTo = findConnections(
+                { latitude, longitude }, techsArray)
+
+            sendMessage(sendSocketMessageTo, 'new-dev', dev)
+
+            return res.status(200).json(dev)
         }
 
         return res.status(409)
@@ -99,7 +109,7 @@ module.exports = {
         })
 
         return res.status(200)
-            .json({ message: `Dev ${name} updated successfully` });
+            .json({ message: `Dev ${name} updated successfully` })
     },
 
     async delete(req, res) {

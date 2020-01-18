@@ -1,14 +1,19 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
+require('dotenv').config()
+const express = require('express')
+const cors = require('cors')
+const http = require("http")
+const { setupWebsocket } = require('./wesocket')
 
+const app = express()
+const server = http.Server(app)
 
-const app = express();
-app.use(express.json());
+setupWebsocket(server)
+
+app.use(express.json())
 app.use(cors())
 
 const port = normalizePort(process.env.PORT || '4200');
-app.listen(port);
+server.listen(port);
 
 //First ENDPOINT
 app.get('/', (req, res, next) => {
